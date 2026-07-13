@@ -1649,7 +1649,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
         </div>
 
         {/* Central Navigation Tabs (Desktop Only) */}
-        <div className="admin-nav-tabs desktop-only" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="admin-nav-tabs desktop-only" style={{ gap: '0.5rem', alignItems: 'center' }}>
           <button 
             className={`nav-link ${activeTab === 'leads' ? 'active' : ''}`} 
             onClick={() => setActiveTab('leads')}
@@ -1767,7 +1767,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
         </div>
 
         {/* Right side controls (Desktop Only) */}
-        <div className="admin-nav-actions desktop-only" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div className="admin-nav-actions desktop-only" style={{ gap: '0.75rem', alignItems: 'center' }}>
           <button 
             className="theme-toggle-btn" 
             onClick={toggleTheme} 
@@ -1803,8 +1803,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
             borderRadius: 'var(--radius-sm)',
             padding: '0.45rem',
             cursor: 'pointer',
-            color: 'var(--muted)',
-            display: 'none' /* Toggle visiblity using media queries */
+            color: 'var(--muted)'
           }}
         >
           <MoreVertical size={20} />
