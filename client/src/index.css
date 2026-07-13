@@ -1068,3 +1068,27 @@ input:-webkit-autofill:active {
     width: 34px !important;
   }
 }
+
+/* Custom Responsive Helpers */
+.dashboard-span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .dashboard-span-2 {
+    grid-column: span 1 !important;
+  }
+}
+
+.responsive-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 576px) {
+  .responsive-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}

@@ -2434,9 +2434,9 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                       
                       {/* Visual 1: Funnel Chart */}
-                      <div className="glass-panel" style={{ padding: '2rem', gridColumn: 'span 2', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div className="glass-panel dashboard-span-2" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.5rem', width: '100%', textAlign: 'left' }}>Conversion Funnel Stages (%)</h4>
-                        <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
+                        <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'flex-start', overflowX: 'auto' }}>
                           <svg width="600" height="300" viewBox="0 0 600 300" style={{ display: 'block', overflow: 'visible' }}>
                             {(() => {
                               const stages = [
@@ -2667,7 +2667,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                           .slice(0, 15);
 
                         return (
-                          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gridColumn: 'span 2' }}>
+                          <div className="glass-panel dashboard-span-2" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
                             <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.25rem' }}>Geographic Heatmap — India (Pincode & State Mapping)</h4>
                             <p style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', marginBottom: '1.5rem' }}>Leads density by Indian state, mapped from residence pincodes and MIS state data.</p>
 
@@ -2840,7 +2840,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                       })()}
 
                       {/* Visual 9: Product Des / Card Name */}
-                      <div className="glass-panel" style={{ padding: '1.5rem', gridColumn: 'span 2' }}>
+                      <div className="glass-panel dashboard-span-2" style={{ padding: '1.5rem' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem' }}>Product Description (Card Name Distribution)</h4>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
                           {Object.entries(prodDist).map(([name, val], idx) => {
@@ -3003,7 +3003,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                     />
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="responsive-form-grid">
                     <div className="form-group">
                       <label className="form-label">Bank Name</label>
                       <select 
@@ -3121,7 +3121,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                       </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <div className="responsive-form-grid" style={{ alignItems: 'center', marginBottom: '1.5rem' }}>
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label">Display Order</label>
                       <input 
@@ -3226,7 +3226,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                       disabled={!!editingAgent}
                     />
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="responsive-form-grid">
                     <div className="form-group">
                       <label className="form-label">Full Name</label>
                       <input 
@@ -3272,7 +3272,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                     </select>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="responsive-form-grid">
                     <div className="form-group">
                       <label className="form-label">Username</label>
                       <input 
