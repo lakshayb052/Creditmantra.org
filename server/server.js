@@ -2626,6 +2626,17 @@ app.post('/api/pincodes/parse', authenticateToken, requireAdmin, upload.single('
   }
 });
 
+// Serve static files from Vite frontend build directory
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Fallback to index.html for client-side SPA routing (history API fallback)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
 // Global exception and error handling middleware
 app.use((err, req, res, next) => {
   console.error('[Express Async Error Handler Exception]:', err);

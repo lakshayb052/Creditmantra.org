@@ -4,6 +4,8 @@
   "description": "CreditMantra Lead Generation & Agent Management Platform",
   "scripts": {
     "install-all": "npm install && cd server && npm install && cd ../client && npm install --legacy-peer-deps",
+    "build": "npm run install-all && cd client && npm run build",
+    "start": "cd server && npm start",
     "server": "cd server && npm start",
     "client": "cd client && npm run dev",
     "dev": "npx concurrently \"npm run server\" \"npm run client\""
