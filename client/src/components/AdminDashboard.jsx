@@ -3163,9 +3163,9 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                 <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>Cards Catalog ({cards.length})</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {cards.map(card => (
-                    <div key={card.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div key={card.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div style={{ minWidth: 0, flex: '1 1 200px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <h4 style={{ fontWeight: 700 }}>{card.name}</h4>
                           <span className={`badge ${card.active ? 'badge-success' : 'badge-warning'}`}>
                             {card.active ? 'Active' : 'Inactive'}
@@ -3184,7 +3184,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                             UTM Internal: <span style={{ color: 'var(--green-deep)', fontWeight: 600 }}>{card.utm_internal || card.ad_id}</span>
                           </div>
                         )}
-                        <div style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', maxWidth: '350px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {card.redirect_url_template}
                         </div>
                       </div>
