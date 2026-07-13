@@ -202,8 +202,8 @@ export default function App() {
       {showSplash && (
         <div className={`splash-screen ${fadeSplash ? 'fade-out' : ''}`}>
           <div className="splash-content">
-            <span style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--green)', boxShadow: '0 0 0 16px rgba(22, 163, 123, 0.22)', display: 'block', marginBottom: '1.5rem' }}></span>
-            <h1 className="splash-title">Fin<span>Mantra</span></h1>
+            <img src="/logo.png" alt="CreditMantra Logo" style={{ height: '72px', width: '72px', borderRadius: '16px', objectFit: 'cover', boxShadow: '0 4px 20px rgba(22, 163, 123, 0.28)', display: 'block', marginBottom: '1.5rem', margin: '0 auto 1.5rem auto' }} />
+            <h1 className="splash-title">Credit<span>Mantra</span></h1>
             <div className="splash-loader"></div>
           </div>
         </div>
