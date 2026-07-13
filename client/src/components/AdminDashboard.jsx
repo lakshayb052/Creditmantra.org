@@ -2431,12 +2431,14 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                     </div>
 
                     {/* 9 VISUALS GRID */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                    <div className="dashboard-visuals-grid">
                       
                       {/* Visual 1: Funnel Chart */}
-                      <div className="glass-panel dashboard-span-2" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div className="glass-panel dashboard-span-2" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.5rem', width: '100%', textAlign: 'left' }}>Conversion Funnel Stages (%)</h4>
-                        <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'flex-start', overflowX: 'auto' }}>
+                        
+                        {/* Desktop Funnel */}
+                        <div className="desktop-only-funnel" style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'flex-start', overflowX: 'auto' }}>
                           <svg width="600" height="300" viewBox="0 0 600 300" style={{ display: 'block', overflow: 'visible' }}>
                             {(() => {
                               const stages = [
@@ -2516,12 +2518,49 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                             })()}
                           </svg>
                         </div>
+
+                        {/* Mobile Funnel */}
+                        <div className="mobile-only-funnel" style={{ width: '100%', flexDirection: 'column', gap: '0.75rem' }}>
+                          {(() => {
+                            const stages = [
+                              { name: 'Total Application Submit', count: totalSubmit, pct: 100, color: 'var(--ink)' },
+                              { name: 'IPA Approved', count: funnelIpa, pct: totalSubmit > 0 ? Math.round((funnelIpa / totalSubmit) * 100) : 0, color: 'hsl(var(--primary))' },
+                              { name: 'KYC Success', count: funnelKyc, pct: totalSubmit > 0 ? Math.round((funnelKyc / totalSubmit) * 100) : 0, color: 'var(--green-deep)' },
+                              { name: 'Final Decision (Approve)', count: funnelDecision, pct: totalSubmit > 0 ? Math.round((funnelDecision / totalSubmit) * 100) : 0, color: 'var(--mint)' },
+                              { name: 'Card Activation Status (TXN ACTIVE)', count: funnelActive, pct: totalSubmit > 0 ? Math.round((funnelActive / totalSubmit) * 100) : 0, color: '#10b981' }
+                            ];
+
+                            return stages.map((stage, idx) => (
+                              <React.Fragment key={idx}>
+                                {idx > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'center', margin: '-0.35rem 0' }}>
+                                    <div style={{ width: '2px', height: '14px', background: 'var(--line)', opacity: 0.5 }} />
+                                  </div>
+                                )}
+                                <div className="glass-panel" style={{ padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--paper-2)', borderLeft: `4px solid ${stage.color}`, margin: 0, borderRadius: '8px', borderTop: 'none', borderRight: 'none', borderBottom: 'none' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink)' }}>{stage.name}</span>
+                                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: stage.color }}>{stage.pct}%</span>
+                                  </div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: 'hsl(var(--text-secondary))' }}>
+                                    <span>{stage.count} Leads</span>
+                                    <span>Conversion</span>
+                                  </div>
+                                  <div style={{ height: '6px', background: 'var(--line)', borderRadius: '3px', overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: `${stage.pct}%`, background: stage.color, borderRadius: '3px' }} />
+                                  </div>
+                                </div>
+                              </React.Fragment>
+                            ));
+                          })()}
+                        </div>
+
                       </div>
 
                       {/* Visual 2: Pie Chart - IPA Approved vs Declined */}
                       <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem' }}>IPA Decision Breakdown</h4>
-                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
                           <svg width="120" height="120" viewBox="0 0 36 36">
                             <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--line)" strokeWidth="4.2" />
                             {totalSubmit > 0 && (() => {
@@ -2576,7 +2615,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                       {/* Visual 4: Pie Chart - Source Type */}
                       <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem' }}>Source Type</h4>
-                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', textAlign: 'left', width: '100%' }}>
                             {Object.entries(srcDist).map(([name, val], idx) => {
                               const colors = ['#16A37B', '#16A37B', '#11132B', '#5C6070', '#D14343'];
@@ -2618,7 +2657,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                       {/* Visual 6: Pie Chart - Customer Type */}
                       <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1rem' }}>Customer Type</h4>
-                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', textAlign: 'left', width: '100%' }}>
                             {Object.entries(custTypeDist).map(([name, val], idx) => {
                               const colors = ['#16A37B', '#D14343', '#16A37B', '#11132B'];
@@ -2673,7 +2712,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '2rem' }} className="admin-split-grid">
                               {/* India SVG Map */}
-                              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--paper-2)', borderRadius: '16px', padding: '1.25rem', minHeight: '420px', border: '1px solid var(--line)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)', position: 'relative' }}>
+                              <div className="heatmap-map-container">
                                 <svg width="100%" height="100%" viewBox="40 0 460 430" style={{ display: 'block', overflow: 'visible', maxHeight: '400px' }} preserveAspectRatio="xMidYMid meet">
                                   <defs>
                                     <filter id="india-state-glow">
@@ -3162,8 +3201,8 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                 <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>Cards Catalog ({cards.length})</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {cards.map(card => (
-                    <div key={card.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div style={{ minWidth: 0, flex: '1 1 200px' }}>
+                    <div key={card.id} className="card-manager-item">
+                      <div style={{ minWidth: 0, flex: '1 1 auto' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                           <h4 style={{ fontWeight: 700 }}>{card.name}</h4>
                           <span className={`badge ${card.active ? 'badge-success' : 'badge-warning'}`}>
@@ -3187,7 +3226,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                           {card.redirect_url_template}
                         </div>
                       </div>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <div className="card-manager-item-actions">
                         <button onClick={() => setEditingCard({ ...card, card_locations: card.card_locations || [] })} className="btn-secondary" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Edit size={14} />
                         </button>
