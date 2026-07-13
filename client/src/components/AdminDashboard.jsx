@@ -1507,7 +1507,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
   };
 
   const handleDisconnectBaileys = async () => {
-    if (!window.confirm('Are you sure you want to disconnect this WhatsApp linked device? You will need to scan the QR code again.')) return;
+    if (!window.confirm('Are you sure you want to reset this WhatsApp session? Any active connection will be terminated and you will need to scan the QR code again.')) return;
     setLoadingBaileys(true);
     try {
       await apiFetch(`${API_URL}/whatsapp/disconnect`, {
@@ -4038,7 +4038,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                         </div>
                       </div>
 
-                      {settings.whatsapp_gateway !== 'meta' && baileysStatus.status === 'CONNECTED' && (
+                      {settings.whatsapp_gateway !== 'meta' && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: '1rem' }}>
                           <button 
                             type="button" 
@@ -4047,7 +4047,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                             style={{ padding: '0.6rem 1.5rem', fontSize: '0.85rem', background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.2)', cursor: 'pointer' }}
                             disabled={loadingBaileys}
                           >
-                            {loadingBaileys ? 'Disconnecting...' : 'Disconnect WhatsApp Account'}
+                            {loadingBaileys ? 'Resetting Session...' : 'Reset WhatsApp Session'}
                           </button>
                         </div>
                       )}

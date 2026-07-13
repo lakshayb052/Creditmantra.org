@@ -70,13 +70,21 @@ if (!rawDbUrl) {
 }
 
 const client = new MongoClient(rawDbUrl);
-let dbInstance;
-let locationsCollection;
-let cardsCollection;
-let agentsCollection;
-let leadsCollection;
-let settingsCollection;
-let otpLogCollection;
+let dbInstance = null;
+
+async function getCollection(name) {
+  if (!dbInstance) {
+    try {
+      await client.connect();
+      const dbName = client.db().databaseName || 'creditmantra';
+      dbInstance = client.db(dbName);
+      console.log('[Database] Connected on-demand successfully.');
+    } catch (err) {
+      throw new Error(`Database connection failed: ${err.message}. Please check your DATABASE_URL configuration and database server connectivity.`);
+    }
+  }
+  return dbInstance.collection(name);
+}
 
 console.log('[Database] Configured to connect to MongoDB Atlas.');
 
@@ -84,17 +92,20 @@ const pool = {
   async query(queryString, params = []) {
     const sql = queryString.trim();
     if (/SELECT id, urn, full_name, card_name, created_at FROM leads/i.test(sql)) {
+      const leadsCollection = await getCollection('leads');
       const rows = await leadsCollection.find({}, { projection: { urn: 1, full_name: 1, card_name: 1, created_at: 1 } }).toArray();
       return { rows: rows.map(r => ({ ...r, id: r._id })) };
     }
     
     if (/SELECT id, mis_status, mis_data FROM leads WHERE id = ANY/i.test(sql)) {
       const matchedIds = params[0] || [];
+      const leadsCollection = await getCollection('leads');
       const rows = await leadsCollection.find({ _id: { $in: matchedIds } }, { projection: { mis_status: 1, mis_data: 1 } }).toArray();
       return { rows: rows.map(r => ({ ...r, id: r._id })) };
     }
 
     if (/SELECT COUNT\(\*\) FROM leads/i.test(sql)) {
+      const leadsCollection = await getCollection('leads');
       const count = await leadsCollection.countDocuments();
       return { rows: [{ count }] };
     }
@@ -117,12 +128,11 @@ const db = {
         const dbName = client.db().databaseName || 'creditmantra';
         dbInstance = client.db(dbName);
         
-        locationsCollection = dbInstance.collection('locations');
-        cardsCollection = dbInstance.collection('cards');
-        agentsCollection = dbInstance.collection('agents');
-        leadsCollection = dbInstance.collection('leads');
-        settingsCollection = dbInstance.collection('settings');
-        otpLogCollection = dbInstance.collection('otp_log');
+        const locationsCollection = dbInstance.collection('locations');
+        const cardsCollection = dbInstance.collection('cards');
+        const agentsCollection = dbInstance.collection('agents');
+        const leadsCollection = dbInstance.collection('leads');
+        const settingsCollection = dbInstance.collection('settings');
 
         // Create indexes
         await leadsCollection.createIndex({ agent_id: 1 });
@@ -293,6 +303,7 @@ const db = {
 
   // --- Leads ---
   async getLeads() {
+    const leadsCollection = await getCollection('leads');
     const res = await leadsCollection.find().sort({ created_at: -1 }).toArray();
     return res.map(row => ({
       ...row,
@@ -302,6 +313,7 @@ const db = {
   },
 
   async getLeadByUrn(urn) {
+    const leadsCollection = await getCollection('leads');
     const row = await leadsCollection.findOne({ urn });
     if (!row) return null;
     return {
@@ -312,6 +324,7 @@ const db = {
   },
 
   async getAgentByUsername(username) {
+    const agentsCollection = await getCollection('agents');
     const row = await agentsCollection.findOne({ username, status: 'active' });
     if (!row) return null;
     return {
@@ -322,6 +335,7 @@ const db = {
   },
 
   async getLeadsFiltered({ agentId, page = 1, limit = 50, search = '', card = '', source = '', startDate = '', endDate = '' }) {
+    const leadsCollection = await getCollection('leads');
     const filter = {};
     if (agentId) {
       filter.agent_id = agentId;
@@ -387,6 +401,7 @@ const db = {
   },
 
   async getLeadsForExport({ startDate, endDate }) {
+    const leadsCollection = await getCollection('leads');
     const filter = {};
     if (startDate || endDate) {
       filter.created_at = {};
@@ -407,6 +422,7 @@ const db = {
   },
 
   async addLead(lead) {
+    const leadsCollection = await getCollection('leads');
     const now = new Date();
     const formatterObj = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Kolkata',
@@ -505,6 +521,7 @@ const db = {
   },
 
   async updateLead(id, lead) {
+    const leadsCollection = await getCollection('leads');
     const updateDoc = { ...lead };
     delete updateDoc._id;
     delete updateDoc.id;
@@ -513,27 +530,32 @@ const db = {
   },
 
   async deleteLead(id) {
+    const leadsCollection = await getCollection('leads');
     await leadsCollection.deleteOne({ _id: id });
     return true;
   },
 
   async deleteLeads(ids) {
+    const leadsCollection = await getCollection('leads');
     await leadsCollection.deleteMany({ _id: { $in: ids } });
     return true;
   },
 
   async unmapLead(id) {
+    const leadsCollection = await getCollection('leads');
     await leadsCollection.updateOne({ _id: id }, { $set: { mis_status: null, mis_mapped_at: null, mis_data: {} } });
     return true;
   },
 
   async unmapLeads(ids) {
+    const leadsCollection = await getCollection('leads');
     await leadsCollection.updateMany({ _id: { $in: ids } }, { $set: { mis_status: null, mis_mapped_at: null, mis_data: {} } });
     return true;
   },
 
   // --- Cards ---
   async getCards(includeInactive = false) {
+    const cardsCollection = await getCollection('cards');
     const query = includeInactive ? {} : { active: true };
     const cards = await cardsCollection.find(query).sort({ display_order: 1 }).toArray();
     return cards.map(row => ({
@@ -544,6 +566,7 @@ const db = {
   },
 
   async addCard(card) {
+    const cardsCollection = await getCollection('cards');
     const id = 'card_' + Math.random().toString(36).substr(2, 9);
     const displayOrder = card.display_order || 1;
     const active = card.active !== undefined ? card.active : true;
@@ -567,6 +590,7 @@ const db = {
   },
 
   async updateCard(id, cardData) {
+    const cardsCollection = await getCollection('cards');
     const updateDoc = { ...cardData };
     delete updateDoc._id;
     delete updateDoc.id;
@@ -583,12 +607,14 @@ const db = {
   },
 
   async deleteCard(id) {
+    const cardsCollection = await getCollection('cards');
     await cardsCollection.deleteOne({ _id: id });
     return true;
   },
 
   // --- Agents ---
   async getAgents() {
+    const agentsCollection = await getCollection('agents');
     const res = await agentsCollection.find().sort({ created_at: 1 }).toArray();
     return res.map(row => ({
       ...row,
@@ -598,6 +624,7 @@ const db = {
   },
 
   async addAgent(agent) {
+    const agentsCollection = await getCollection('agents');
     const doc = {
       _id: agent.id,
       name: agent.name,
@@ -615,6 +642,7 @@ const db = {
   },
 
   async updateAgent(id, agentData) {
+    const agentsCollection = await getCollection('agents');
     const updateDoc = { ...agentData };
     delete updateDoc._id;
     delete updateDoc.id;
@@ -631,17 +659,20 @@ const db = {
   },
 
   async deleteAgent(id) {
+    const agentsCollection = await getCollection('agents');
     await agentsCollection.deleteOne({ _id: id });
     return true;
   },
 
   // --- Locations ---
   async getLocations() {
+    const locationsCollection = await getCollection('locations');
     const res = await locationsCollection.find().sort({ created_at: 1 }).toArray();
     return res.map(l => ({ ...l, id: l._id }));
   },
 
   async addLocation(loc) {
+    const locationsCollection = await getCollection('locations');
     const id = 'loc_' + Math.random().toString(36).substr(2, 9);
     const name = loc.name;
     const active = loc.active !== undefined ? loc.active : true;
@@ -656,6 +687,7 @@ const db = {
   },
 
   async updateLocation(id, locData) {
+    const locationsCollection = await getCollection('locations');
     const updateDoc = { ...locData };
     delete updateDoc._id;
     delete updateDoc.id;
@@ -672,12 +704,14 @@ const db = {
   },
 
   async deleteLocation(id) {
+    const locationsCollection = await getCollection('locations');
     await locationsCollection.deleteOne({ _id: id });
     return true;
   },
 
   // --- Settings ---
   async getSettings() {
+    const settingsCollection = await getCollection('settings');
     const rows = await settingsCollection.find().toArray();
     const settings = {};
     rows.forEach(row => {
@@ -696,6 +730,7 @@ const db = {
   },
 
   async updateSettings(settingsData) {
+    const settingsCollection = await getCollection('settings');
     for (const [key, value] of Object.entries(settingsData)) {
       if (value !== undefined && value !== null) {
         await settingsCollection.updateOne(
@@ -710,6 +745,7 @@ const db = {
 
   // --- OTP ---
   async saveOTP(phone, otp) {
+    const otpLogCollection = await getCollection('otp_log');
     const now = new Date().getTime();
     await otpLogCollection.updateOne(
       { _id: phone },
@@ -720,6 +756,7 @@ const db = {
   },
 
   async verifyOTP(phone, otp) {
+    const otpLogCollection = await getCollection('otp_log');
     const log = await otpLogCollection.findOne({ _id: phone });
     if (!log) return { success: false, reason: 'No OTP generated' };
 
@@ -743,15 +780,22 @@ const db = {
   },
 
   async updateLeadMISStatus(id, misStatus, misData) {
+    const leadsCollection = await getCollection('leads');
     await leadsCollection.updateOne(
       { _id: id },
-      { $set: { mis_status: misStatus, mis_mapped_at: new Date(), mis_data: misData } }
+      { $set: { mis_status: misStatus, mis_mapped_at: new Date(), mis_data: {} } }
+    );
+    // Fetch and merge
+    await leadsCollection.updateOne(
+      { _id: id },
+      { $set: { mis_data: misData } }
     );
     const lead = await leadsCollection.findOne({ _id: id });
     return lead ? { id: lead._id, urn: lead.urn, full_name: lead.full_name } : null;
   },
 
   async getMISStats() {
+    const leadsCollection = await getCollection('leads');
     const totalLeads = await leadsCollection.countDocuments();
     const mappedLeadsList = await leadsCollection.find({ mis_status: { $ne: null } }).sort({ mis_mapped_at: -1 }).toArray();
     
@@ -898,6 +942,7 @@ const db = {
 
   async bulkUpdateLeadMISStatus(updates) {
     if (!updates || updates.length === 0) return;
+    const leadsCollection = await getCollection('leads');
     const bulkOps = updates.map(up => ({
       updateOne: {
         filter: { _id: up.id },
