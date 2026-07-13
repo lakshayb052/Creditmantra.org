@@ -726,7 +726,7 @@ a:hover {
 }
 
 /* Custom Overrides for Admin Top Navbar */
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .admin-navbar {
     flex-direction: row !important;
     align-items: center !important;
@@ -821,7 +821,7 @@ a:hover {
   display: none !important;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .desktop-only {
     display: none !important;
   }
@@ -1182,5 +1182,34 @@ input:-webkit-autofill:active {
   .dashboard-visuals-grid {
     grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)) !important;
     gap: 1rem !important;
+  }
+}
+
+/* Tablet & Medium Screen Layout Adapters */
+@media (max-width: 1024px) {
+  /* Stack split layouts on tablet/medium screen sizes */
+  .admin-split-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .admin-split-grid div[style*="display: grid"],
+  .admin-split-grid div[style*="display:grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .agent-panels-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .agent-panels-grid div[style*="display: grid"],
+  .agent-panels-grid div[style*="display:grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .filters-strip {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
   }
 }

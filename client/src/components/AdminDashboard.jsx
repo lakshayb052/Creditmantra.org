@@ -3222,7 +3222,7 @@ export default function AdminDashboard({ navigateTo, theme, toggleTheme }) {
                             UTM Internal: <span style={{ color: 'var(--green-deep)', fontWeight: 600 }}>{card.utm_internal || card.ad_id}</span>
                           </div>
                         )}
-                        <div style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'hsl(var(--text-muted))', wordBreak: 'break-all', marginTop: '0.25rem' }}>
                           {card.redirect_url_template}
                         </div>
                       </div>
