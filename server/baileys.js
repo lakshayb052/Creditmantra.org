@@ -35,6 +35,15 @@ async function initBaileys(broadcast = null) {
   try {
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
     
+    // Clean up any existing active socket connection to ensure only one is ever attached
+    if (sock) {
+      try {
+        sock.ev.removeAllListeners();
+        sock.end();
+      } catch (e) {}
+      sock = null;
+    }
+
     // Create the socket connection
     sock = makeWASocket({
       auth: state,
